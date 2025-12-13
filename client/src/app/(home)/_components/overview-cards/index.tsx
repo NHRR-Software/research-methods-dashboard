@@ -1,19 +1,34 @@
 import { compactFormat } from "@/lib/format-number";
-import { getOverviewData } from "../../fetch";
 import { OverviewCard } from "./card";
 import * as icons from "./icons";
+import { OverviewCardsSkeleton } from "./skeleton";
 
-export async function OverviewCardsGroup() {
-  const { participants, departments, averageAge, averageGPA } =
-    await getOverviewData();
+// SQL'den dönen 'kpi' objesinin tipi
+interface KPIData {
+  total_students: number;
+  total_departments: number;
+  avg_age: number;
+  avg_gpa: number;
+}
+
+interface Props {
+  data: KPIData | null; // DashboardView'dan null gelebilir
+  loading?: boolean;
+}
+
+export function OverviewCardsGroup({ data, loading }: Props) {
+  // Veri yükleniyorsa veya henüz gelmediyse Skeleton göster
+  if (loading || !data) {
+    return <OverviewCardsSkeleton />;
+  }
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 2xl:gap-7.5">
       <OverviewCard
         label="Toplam Katılımcı"
         data={{
-          ...participants,
-          value: compactFormat(participants.value),
+          value: compactFormat(data.total_students),
+          // SQL şuan değişim oranı (rate) vermiyor, gerekirse buraya eklenir
         }}
         Icon={icons.Participants}
       />
@@ -21,8 +36,7 @@ export async function OverviewCardsGroup() {
       <OverviewCard
         label="Toplam Bölüm"
         data={{
-          ...departments,
-          value: compactFormat(departments.value),
+          value: compactFormat(data.total_departments),
         }}
         Icon={icons.Departments}
       />
@@ -30,8 +44,7 @@ export async function OverviewCardsGroup() {
       <OverviewCard
         label="Ortalama Yaş"
         data={{
-          ...averageAge,
-          value: averageAge.value.toFixed(1),
+          value: data.avg_age.toFixed(1),
         }}
         Icon={icons.Age}
       />
@@ -39,8 +52,7 @@ export async function OverviewCardsGroup() {
       <OverviewCard
         label="Ortalama Not Ortalaması"
         data={{
-          ...averageGPA,
-          value: averageGPA.value.toFixed(2),
+          value: data.avg_gpa.toFixed(2),
         }}
         Icon={icons.GPA}
       />

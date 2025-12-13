@@ -1,16 +1,21 @@
-"use client";
-
-import { getGPADistributionData } from "@/services/charts.services";
-import { GPADistributionChart } from "./chart";
 import { cn } from "@/lib/utils";
+import { GPADistributionChart } from "./chart";
 import { GeminiAnalyzeButton } from "@/components/gemini-analyze-button";
 
+// SQL çıktısı: [{ name: "3.50 - 4.00", count: 20 }]
+interface GPAItem {
+  name: string;
+  count: number;
+}
+
 type PropsType = {
+  data: GPAItem[]; // Veriyi prop olarak alıyoruz
   className?: string;
 };
 
-export function GPADistribution({ className }: PropsType) {
-  const data = getGPADistributionData();
+export function GPADistribution({ data, className }: PropsType) {
+  // Veri gelmediyse gösterme
+  if (!data) return null;
 
   return (
     <div

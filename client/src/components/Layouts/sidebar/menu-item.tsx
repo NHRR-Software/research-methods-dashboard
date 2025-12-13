@@ -19,44 +19,34 @@ const menuItemBaseStyles = cva(
   },
 );
 
-export function MenuItem(
-  props: {
-    className?: string;
-    children: React.ReactNode;
-    isActive: boolean;
-  } & ({ as?: "button"; onClick: () => void } | { as: "link"; href: string }),
-) {
+type MenuItemProps = {
+  href: string;
+  isActive: boolean;
+  className?: string;
+  children: React.ReactNode;
+};
+
+export function MenuItem({
+  href,
+  isActive,
+  className,
+  children,
+}: MenuItemProps) {
   const { toggleSidebar, isMobile } = useSidebarContext();
 
-  if (props.as === "link") {
-    return (
-      <Link
-        href={props.href}
-        // Close sidebar on clicking link if it's mobile
-        onClick={() => isMobile && toggleSidebar()}
-        className={cn(
-          menuItemBaseStyles({
-            isActive: props.isActive,
-            className: "relative block py-2",
-          }),
-          props.className,
-        )}
-      >
-        {props.children}
-      </Link>
-    );
-  }
-
   return (
-    <button
-      onClick={props.onClick}
-      aria-expanded={props.isActive}
-      className={menuItemBaseStyles({
-        isActive: props.isActive,
-        className: "flex w-full items-center gap-3 py-3",
-      })}
+    <Link
+      href={href}
+      onClick={() => isMobile && toggleSidebar()}
+      className={cn(
+        menuItemBaseStyles({
+          isActive,
+          className: "flex items-center gap-3 py-3",
+        }),
+        className,
+      )}
     >
-      {props.children}
-    </button>
+      {children}
+    </Link>
   );
 }

@@ -9,10 +9,10 @@ const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
+// SQL'den gelen ham veri (Yüzde yok)
 type DataItem = {
   name: string;
   count: number;
-  percentage: number;
 };
 
 type PropsType = {
@@ -32,11 +32,21 @@ export function DepartmentDistributionChart({ data }: PropsType) {
   const axisColor = isDark ? "#94A3B8" : "#64748B";
   const gridColor = isDark ? "#374151" : "#E2E8F0";
 
+  // Veri Hazırlığı
   const categories = data.map((item) => item.name);
   const values = data.map((item) => item.count);
-  const percentages = data.map((item) => item.percentage);
 
-  // Generate colors for each bar
+  // Yüzde Hesaplama
+  const totalStudents = values.reduce((acc, curr) => acc + curr, 0);
+  const percentages = values.map((val) =>
+    totalStudents > 0 ? (val / totalStudents) * 100 : 0,
+  );
+
+  // Dinamik Maksimum Değer (Etiketlerin sığması için %20 boşluk bırak)
+  const maxValue = Math.max(...values, 0);
+  const dynamicMax = maxValue + maxValue * 0.2 + 2;
+
+  // Renk Paleti
   const colors = [
     "#3B82F6", // blue
     "#EF4444", // red
@@ -68,13 +78,14 @@ export function DepartmentDistributionChart({ data }: PropsType) {
       toolbar: {
         show: false,
       },
+      fontFamily: "inherit",
     },
     plotOptions: {
       bar: {
         horizontal: true,
         barHeight: "75%",
         borderRadius: 4,
-        distributed: true,
+        distributed: true, // Her çubuğa farklı renk verir
         dataLabels: {
           position: "right",
         },
@@ -83,7 +94,8 @@ export function DepartmentDistributionChart({ data }: PropsType) {
     dataLabels: {
       enabled: true,
       formatter: function (val: number, opts: { dataPointIndex: number }) {
-        return `   ${val} (%${percentages[opts.dataPointIndex].toFixed(1).replace(".", ",")})`;
+        const percent = percentages[opts.dataPointIndex];
+        return `   ${val} (%${percent.toFixed(1).replace(".", ",")})`;
       },
       offsetX: 0,
       textAnchor: "start",
@@ -99,7 +111,7 @@ export function DepartmentDistributionChart({ data }: PropsType) {
     xaxis: {
       categories: categories,
       min: 0,
-      max: Math.max(...values) + 8,
+      max: dynamicMax, // Dinamik hesaplanan max değer
       tickAmount: 5,
       labels: {
         style: {
@@ -113,7 +125,7 @@ export function DepartmentDistributionChart({ data }: PropsType) {
     },
     yaxis: {
       labels: {
-        maxWidth: 180,
+        maxWidth: 200, // Uzun bölüm isimleri için genişlik
         style: {
           colors: axisColor,
           fontSize: "11px",
@@ -138,7 +150,8 @@ export function DepartmentDistributionChart({ data }: PropsType) {
       theme: isDark ? "dark" : "light",
       y: {
         formatter: function (val: number, opts: { dataPointIndex: number }) {
-          return `${val} kişi (%${percentages[opts.dataPointIndex].toFixed(1).replace(".", ",")})`;
+          const percent = percentages[opts.dataPointIndex];
+          return `${val} kişi (%${percent.toFixed(1).replace(".", ",")})`;
         },
       },
     },

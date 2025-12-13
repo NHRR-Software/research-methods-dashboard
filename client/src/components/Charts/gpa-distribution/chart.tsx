@@ -9,10 +9,10 @@ const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
+// SQL'den gelen ham veri
 type DataItem = {
-  range: string;
+  name: string;
   count: number;
-  percentage: number;
 };
 
 type PropsType = {
@@ -30,9 +30,17 @@ export function GPADistributionChart({ data }: PropsType) {
   const isDark = mounted && (theme === "dark" || resolvedTheme === "dark");
   const textColor = isDark ? "#FFFFFF" : "#1C2434";
 
-  const series = data.map((item) => item.percentage);
-  const labels = data.map((item) => item.range);
+  // Veri Hesaplamaları
+  const labels = data.map((item) => item.name);
   const counts = data.map((item) => item.count);
+
+  // Toplam Öğrenci Sayısı
+  const totalStudents = counts.reduce((acc, curr) => acc + curr, 0);
+
+  // Yüzdeleri Hesapla (RadialBar için Series, yüzde olmalı)
+  const series = counts.map((count) =>
+    totalStudents > 0 ? Number(((count / totalStudents) * 100).toFixed(1)) : 0,
+  );
 
   const options: ApexOptions = {
     chart: {
@@ -40,6 +48,7 @@ export function GPADistributionChart({ data }: PropsType) {
       toolbar: {
         show: false,
       },
+      fontFamily: "inherit",
     },
     plotOptions: {
       radialBar: {
@@ -77,8 +86,9 @@ export function GPADistributionChart({ data }: PropsType) {
             fontSize: "14px",
             fontWeight: 600,
             color: textColor,
+            // Ortadaki toplam değeri dinamik göster
             formatter: function () {
-              return "54 Kişi";
+              return `${totalStudents} Kişi`;
             },
           },
         },
@@ -92,13 +102,19 @@ export function GPADistributionChart({ data }: PropsType) {
       horizontalAlign: "center",
       fontSize: "14px",
       fontWeight: 500,
+      itemMargin: {
+        horizontal: 5,
+        vertical: 5,
+      },
       labels: {
         colors: textColor,
       },
       markers: {
         size: 10,
-        shape: "circle",
+        strokeWidth: 0,
+        offsetX: -2,
       },
+      // Legend'da kişi sayısını göster
       formatter: function (seriesName: string, opts: { seriesIndex: number }) {
         return `${seriesName}: ${counts[opts.seriesIndex]} kişi`;
       },
@@ -121,6 +137,9 @@ export function GPADistributionChart({ data }: PropsType) {
         options: {
           legend: {
             position: "bottom",
+            itemMargin: {
+              vertical: 2,
+            },
           },
         },
       },
@@ -133,7 +152,7 @@ export function GPADistributionChart({ data }: PropsType) {
     <div className="flex items-center justify-center">
       <Chart
         options={options}
-        series={series}
+        series={series} // Yüzdeleri gönderiyoruz
         type="radialBar"
         height={400}
         width={400}

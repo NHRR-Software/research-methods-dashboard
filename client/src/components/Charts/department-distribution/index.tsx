@@ -1,16 +1,21 @@
-"use client";
-
-import { getDepartmentDistributionData } from "@/services/charts.services";
-import { DepartmentDistributionChart } from "./chart";
 import { cn } from "@/lib/utils";
+import { DepartmentDistributionChart } from "./chart";
 import { GeminiAnalyzeButton } from "@/components/gemini-analyze-button";
 
+// SQL çıktısı: [{ name: "Bilgisayar Müh...", count: 45 }]
+interface DepartmentItem {
+  name: string;
+  count: number;
+}
+
 type PropsType = {
+  data: DepartmentItem[]; // Veriyi prop olarak alıyoruz
   className?: string;
 };
 
-export function DepartmentDistribution({ className }: PropsType) {
-  const data = getDepartmentDistributionData();
+export function DepartmentDistribution({ data, className }: PropsType) {
+  // Veri gelmediyse gösterme
+  if (!data) return null;
 
   return (
     <div

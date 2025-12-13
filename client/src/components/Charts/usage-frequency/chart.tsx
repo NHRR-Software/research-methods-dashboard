@@ -8,10 +8,10 @@ import { useEffect, useState } from "react";
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
+// SQL'den gelen ham veri (Yüzde yok)
 type DataItem = {
   name: string;
   count: number;
-  percentage: number;
 };
 
 type PropsType = {
@@ -29,17 +29,23 @@ export function UsageFrequencyChart({ data: inputData }: PropsType) {
   const isDark = mounted && (theme === "dark" || resolvedTheme === "dark");
   const legendColor = isDark ? "#FFFFFF" : "#1C2434";
 
+  // Toplamı bileşen içinde hesaplıyoruz
+  const total = inputData
+    ? inputData.reduce((sum, item) => sum + item.count, 0)
+    : 0;
+
   const data = {
     labels: inputData.map((item) => item.name),
     datasets: [
       {
         data: inputData.map((item) => item.count),
         backgroundColor: [
-          "#3C50E0", // Hiç kullanmıyorum - Mavi
-          "#EF4444", // Ayda bir - Kırmızı
-          "#F97316", // Haftada bir - Turuncu
-          "#22C55E", // Haftada birkaç kez - Yeşil
-          "#A855F7", // Günlük - Mor
+          "#3C50E0", // Mavi
+          "#EF4444", // Kırmızı
+          "#F97316", // Turuncu
+          "#22C55E", // Yeşil
+          "#A855F7", // Mor
+          "#6366F1", // İndigo (Ekstra renk ihtimaline karşı)
         ],
         borderWidth: 0,
       },
@@ -66,10 +72,13 @@ export function UsageFrequencyChart({ data: inputData }: PropsType) {
       },
       tooltip: {
         callbacks: {
-          label: function (context: { parsed: number; label: string }) {
-            const total = inputData.reduce((sum, item) => sum + item.count, 0);
-            const percentage = ((context.parsed / total) * 100).toFixed(1);
-            return `${context.label}: ${context.parsed} kişi (%${percentage.replace(".", ",")})`;
+          // Tooltip içinde yüzde hesabı
+          label: function (context: any) {
+            const val = context.parsed;
+            if (total === 0) return `${context.label}: ${val}`;
+
+            const percentage = ((val / total) * 100).toFixed(1);
+            return `${context.label}: ${val} kişi (%${percentage.replace(".", ",")})`;
           },
         },
       },
@@ -80,9 +89,13 @@ export function UsageFrequencyChart({ data: inputData }: PropsType) {
           size: 14,
         },
         formatter: (value: number) => {
-          const total = inputData.reduce((sum, item) => sum + item.count, 0);
+          if (total === 0) return "";
+
           const percentage = ((value / total) * 100).toFixed(1);
-          return value > 2 ? `${percentage.replace(".", ",")}%` : "";
+          // Küçük dilimlerde (%2'den az) yazı yazma ki karmaşa olmasın
+          return value > 0 && value / total > 0.02
+            ? `${percentage.replace(".", ",")}%`
+            : "";
         },
       },
     },

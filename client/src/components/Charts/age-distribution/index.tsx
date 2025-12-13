@@ -1,14 +1,22 @@
 import { cn } from "@/lib/utils";
-import { getAgeDistributionData } from "@/services/charts.services";
 import { AgeDistributionChart } from "./chart";
 import { GeminiAnalyzeButton } from "@/components/gemini-analyze-button";
 
+// SQL çıktısına göre veri tipi (age: int, count: int)
+interface AgeData {
+  age: number;
+  count: number;
+}
+
 type PropsType = {
+  data: AgeData[]; // Veriyi artık prop olarak alıyor
   className?: string;
 };
 
-export async function AgeDistribution({ className }: PropsType) {
-  const data = await getAgeDistributionData();
+export function AgeDistribution({ data, className }: PropsType) {
+  // Eğer veri henüz yüklenmediyse veya null ise bileşeni gösterme (veya Skeleton koyabilirsin)
+  // DashboardView loading durumunu yönettiği için buraya boş gelme ihtimali düşük ama güvenlik için:
+  if (!data) return null;
 
   return (
     <div
@@ -21,12 +29,15 @@ export async function AgeDistribution({ className }: PropsType) {
         <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
           Yaş Dağılımı
         </h2>
+
+        {/* Gemini butonuna dinamik veriyi gönderiyoruz */}
         <GeminiAnalyzeButton
           chartName="Yaş Dağılımı"
           chartData={JSON.stringify(data)}
         />
       </div>
 
+      {/* Chart bileşenine veriyi gönderiyoruz */}
       <AgeDistributionChart data={data} />
     </div>
   );

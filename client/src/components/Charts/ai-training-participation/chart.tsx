@@ -9,14 +9,14 @@ const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-type DataType = {
-  participated: number;
-  notParticipated: number;
-  percentage: number;
+// GÜNCELLEME: Log çıktısına göre veri yapısı
+type DataItem = {
+  trained_count: number; // Logda gelen isim
+  total_count: number; // Logda gelen isim
 };
 
 type PropsType = {
-  data: DataType;
+  data: DataItem;
 };
 
 export function AITrainingParticipationChart({ data }: PropsType) {
@@ -30,35 +30,49 @@ export function AITrainingParticipationChart({ data }: PropsType) {
   const isDark = mounted && (theme === "dark" || resolvedTheme === "dark");
   const textColor = isDark ? "#FFFFFF" : "#1C2434";
 
+  // GÜNCELLEME: Değişkenleri yeni isimlerden alıyoruz
+  // Eğer veri null gelirse 0 varsayıyoruz
+  const participated = data?.trained_count || 0;
+  const total = data?.total_count || 0;
+
+  const notParticipated = total - participated;
+
+  // Yüzde Hesapla (0'a bölünme hatasını önle)
+  const percentage = total > 0 ? (participated / total) * 100 : 0;
+
   const options: ApexOptions = {
     chart: {
       type: "radialBar",
       sparkline: {
-        enabled: true,
+        enabled: false, // Textlerin görünmesi için kapalı olmalı
       },
+      fontFamily: "inherit",
     },
     plotOptions: {
       radialBar: {
         startAngle: -135,
         endAngle: 135,
         hollow: {
-          size: "70%",
+          margin: 15,
+          size: "65%",
         },
         track: {
           background: isDark ? "#374151" : "#E5E7EB",
           strokeWidth: "100%",
+          margin: 5,
         },
         dataLabels: {
+          show: true,
           name: {
             show: true,
             fontSize: "14px",
             fontWeight: 600,
             color: isDark ? "#94A3B8" : "#64748B",
-            offsetY: 70,
+            offsetY: 80,
           },
           value: {
             show: true,
-            fontSize: "36px",
+            fontSize: "30px",
             fontWeight: 700,
             color: textColor,
             offsetY: -10,
@@ -75,44 +89,51 @@ export function AITrainingParticipationChart({ data }: PropsType) {
         shade: "dark",
         type: "horizontal",
         shadeIntensity: 0.5,
-        gradientToColors: ["#8B5CF6"], // violet
+        gradientToColors: ["#8B5CF6"],
         inverseColors: false,
         opacityFrom: 1,
         opacityTo: 1,
         stops: [0, 100],
       },
     },
-    colors: ["#3C50E0"], // primary blue
+    colors: ["#3C50E0"],
     labels: ["Katılım Oranı"],
     stroke: {
       lineCap: "round",
     },
+    grid: {
+      padding: {
+        top: -20,
+        bottom: -20,
+      },
+    },
   };
 
-  const series = [data.percentage];
+  const series = [percentage];
 
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex w-full flex-col items-center justify-center">
       <Chart
         options={options}
         series={series}
         type="radialBar"
-        height={280}
-        width={280}
+        height={320}
+        width={"100%"}
       />
-      <div className="mt-2 flex gap-6 text-sm">
+
+      <div className="mt-3 flex gap-6 text-sm">
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-primary"></span>
           <span className="text-gray-600 dark:text-gray-300">
-            Evet: {data.participated} kişi
+            Evet: {participated} kişi
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-gray-300 dark:bg-gray-600"></span>
           <span className="text-gray-600 dark:text-gray-300">
-            Hayır: {data.notParticipated} kişi
+            Hayır: {notParticipated} kişi
           </span>
         </div>
       </div>

@@ -1,16 +1,21 @@
-"use client";
-
-import { getUsagePurposesData } from "@/services/charts.services";
-import { UsagePurposesChart } from "./chart";
 import { cn } from "@/lib/utils";
+import { UsagePurposesChart } from "./chart";
 import { GeminiAnalyzeButton } from "@/components/gemini-analyze-button";
 
+// SQL çıktısı: [{ name: "Ödev...", count: 150 }]
+interface PurposeItem {
+  name: string;
+  count: number;
+}
+
 type PropsType = {
+  data: PurposeItem[]; // Veriyi prop olarak alıyoruz
   className?: string;
 };
 
-export function UsagePurposes({ className }: PropsType) {
-  const data = getUsagePurposesData();
+export function UsagePurposes({ data, className }: PropsType) {
+  // Veri gelmediyse gösterme
+  if (!data) return null;
 
   return (
     <div

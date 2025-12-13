@@ -1,14 +1,21 @@
 import { cn } from "@/lib/utils";
-import { getGenderDistributionData } from "@/services/charts.services";
 import { GenderDistributionChart } from "./chart";
 import { GeminiAnalyzeButton } from "@/components/gemini-analyze-button";
 
+// SQL çıktısına uygun veri tipi
+interface GenderItem {
+  name: string;
+  value: number;
+}
+
 type PropsType = {
+  data: GenderItem[]; // Veriyi prop olarak alıyoruz
   className?: string;
 };
 
-export async function GenderDistribution({ className }: PropsType) {
-  const data = await getGenderDistributionData();
+export function GenderDistribution({ data, className }: PropsType) {
+  // Veri yüklenmediyse gösterme
+  if (!data) return null;
 
   return (
     <div

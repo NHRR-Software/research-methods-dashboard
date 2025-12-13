@@ -1,16 +1,21 @@
-"use client";
-
-import { getUsageFrequencyData } from "@/services/charts.services";
-import { UsageFrequencyChart } from "./chart";
 import { cn } from "@/lib/utils";
+import { UsageFrequencyChart } from "./chart";
 import { GeminiAnalyzeButton } from "@/components/gemini-analyze-button";
 
+// SQL çıktısına uygun veri yapısı
+interface FrequencyItem {
+  name: string;
+  count: number;
+}
+
 type PropsType = {
+  data: FrequencyItem[]; // Veriyi prop olarak alıyoruz
   className?: string;
 };
 
-export function UsageFrequency({ className }: PropsType) {
-  const data = getUsageFrequencyData();
+export function UsageFrequency({ data, className }: PropsType) {
+  // Veri gelmediyse gösterme
+  if (!data) return null;
 
   return (
     <div

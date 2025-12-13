@@ -4,8 +4,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import type { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 
+// SQL'den gelen veri yapısı
 type PropsType = {
-  data: { x: number; y: number }[];
+  data: { age: number; count: number }[];
 };
 
 const Chart = dynamic(() => import("react-apexcharts"), {
@@ -14,6 +15,12 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 
 export function AgeDistributionChart({ data }: PropsType) {
   const isMobile = useIsMobile();
+
+  // ApexCharts için veriyi { x, y } formatına dönüştürüyoruz
+  const seriesData = data.map((item) => ({
+    x: item.age,
+    y: item.count,
+  }));
 
   const options: ApexOptions = {
     legend: {
@@ -92,6 +99,7 @@ export function AgeDistributionChart({ data }: PropsType) {
       },
     },
     xaxis: {
+      type: "numeric", // X eksenini sayısal olarak işler
       axisBorder: {
         show: false,
       },
@@ -124,7 +132,7 @@ export function AgeDistributionChart({ data }: PropsType) {
         series={[
           {
             name: "Kişi Sayısı",
-            data: data,
+            data: seriesData, // Dönüştürülmüş veriyi buraya veriyoruz
           },
         ]}
         type="area"

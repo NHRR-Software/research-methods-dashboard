@@ -1,14 +1,21 @@
 import { cn } from "@/lib/utils";
-import { getClassDistributionData } from "@/services/charts.services";
 import { ClassDistributionChart } from "./chart";
 import { GeminiAnalyzeButton } from "@/components/gemini-analyze-button";
 
+// SQL'den gelen veri yapısı
+interface ClassItem {
+  name: string;
+  value: number;
+}
+
 type PropsType = {
+  data: ClassItem[]; // Veriyi prop olarak alıyoruz
   className?: string;
 };
 
-export async function ClassDistribution({ className }: PropsType) {
-  const data = await getClassDistributionData();
+export function ClassDistribution({ data, className }: PropsType) {
+  // Veri yoksa gösterme (Skeleton yönetimi üst bileşende veya burada null)
+  if (!data) return null;
 
   return (
     <div
