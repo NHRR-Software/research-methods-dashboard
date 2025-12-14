@@ -1,7 +1,7 @@
 "use server";
 
 export async function analyzeChartData(chartName: string, chartData: string) {
-  const apiKey =process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
 
   if (!apiKey) {
     return { success: false, message: "API Key eksik." };
