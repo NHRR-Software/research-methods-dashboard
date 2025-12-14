@@ -1,32 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { analyzeChartData } from "@/app/action/gemini";
 
 type PropsType = {
   chartName: string;
-  chartData: string;
+  chartData: string; // JSON string formatında veri
   className?: string;
-};
-
-// Simüle edilmiş yapay zeka yorumları
-const simulatedResponses: Record<string, string> = {
-  "Yaş Dağılımı":
-    "Katılımcıların büyük çoğunluğu (%35) 22 yaşında olup, bu durum üniversite son sınıf öğrencilerinin ankete daha fazla katıldığını göstermektedir. 18-23 yaş aralığı toplam katılımın %89'unu oluşturuyor.",
-  "Cinsiyet Dağılımı":
-    "Kadın katılımcılar (%55.6) erkek katılımcılardan (%44.4) biraz daha fazla. Bu dağılım, genel üniversite popülasyonuyla uyumlu görünmektedir.",
-  "Sınıf Dağılımı":
-    "4. sınıf öğrencileri %64.8 ile baskın çoğunluğu oluşturuyor. Bu, yapay zeka araçlarının kariyer hazırlığı ve bitirme projeleri için yoğun kullanıldığını işaret edebilir.",
-  "Kullanım Amaçları":
-    "Ödev/proje hazırlama (%88.9) ve ders notları çıkarma (%81.5) en yaygın kullanım amaçları. Akademik odaklı kullanım baskın, yaratıcı içerik üretimi (%29.6) daha az tercih ediliyor.",
-  "Yapay Zeka Araçları Kullanımı":
-    "ChatGPT (%98.1) neredeyse evrensel kullanıma sahip. Gemini (%81.5) ikinci sırada. Özelleşmiş araçlar (Midjourney, DALL-E) daha düşük oranlarda tercih ediliyor.",
-  "Kullanım Sıklığı":
-    "Katılımcıların %61.1'i günlük, %27.8'i haftada birkaç kez yapay zeka kullanıyor. Bu, yapay zekanın günlük akademik yaşamın ayrılmaz bir parçası haline geldiğini gösteriyor.",
-  "Not Ortalaması Dağılımı":
-    "Katılımcıların %50'si 3.00-3.49 aralığında not ortalamasına sahip. Yüksek not ortalamalarına sahip öğrencilerin yapay zeka araçlarını aktif kullandığı görülüyor.",
-  "Bölüm Dağılımı":
-    "Bilgisayar Mühendisliği öğrencileri %38.9 ile en yüksek katılımı gösteriyor. Teknik bölümlerin yapay zeka konusunda daha ilgili olduğu açıkça görülmektedir.",
 };
 
 export function GeminiAnalyzeButton({
@@ -39,30 +20,40 @@ export function GeminiAnalyzeButton({
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  // Simüle edilmiş API çağrısı
   const handleAnalyze = async () => {
     if (state === "done") return;
 
     setState("loading");
+    setResponse(""); // Önceki yanıtı temizle
 
-    // 2-3 saniye bekle (simülasyon)
-    await new Promise((resolve) =>
-      setTimeout(resolve, 2000 + Math.random() * 1000),
-    );
+    try {
+      // Server Action'ı çağırıyoruz (Gerçek API İsteği)
+      const result = await analyzeChartData(chartName, chartData);
 
-    // Simüle edilmiş yanıt
-    const simulatedResponse =
-      simulatedResponses[chartName] ||
-      `${chartName} verilerine göre ilginç bir dağılım gözlemlenmektedir. Detaylı analiz için verilerin daha derinlemesine incelenmesi önerilir.`;
+      if (result.success) {
+        setResponse(result.message);
+      } else {
+        setResponse("Analiz sırasında bir hata oluştu.");
+      }
+    } catch (error) {
+      console.error("Client Error:", error);
+      setResponse("Bağlantı hatası oluştu.");
+    } finally {
+      setState("done");
+      setShowTooltip(true);
 
-    setResponse(simulatedResponse);
-    setState("done");
-    setShowTooltip(true);
+      // 10 saniye sonra tooltip'i kapat (Okumak için süre tanıyalım)
+      setTimeout(() => {
+        setShowTooltip(false);
+      }, 10000);
+    }
+  };
 
-    // 5 saniye sonra tooltip'i kapat
-    setTimeout(() => {
-      setShowTooltip(false);
-    }, 5000);
+  // Eğer analiz zaten yapılmışsa ve tooltip kapalıysa, butona tekrar basınca tooltip açılsın
+  const handleReopenTooltip = () => {
+    if (state === "done") {
+      setShowTooltip(true);
+    }
   };
 
   return (
@@ -72,10 +63,27 @@ export function GeminiAnalyzeButton({
         <button
           onClick={handleAnalyze}
           className="group flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md transition-all hover:scale-110 hover:shadow-lg"
-          title="Gemini ile analiz et"
+          title="Yapay Zeka ile Analiz Et"
         >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          {/* Gemini Icon */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="17"
+            height="17"
+            viewBox="0 0 17 17"
+            fill="none"
+          >
+            <g clip-path="url(#clip0_747_1829)">
+              <path
+                d="M17 8.517C12.4405 8.79183 8.79042 12.4405 8.51629 17H8.483C8.20817 12.4405 4.55883 8.79183 0 8.517V8.48371C4.55954 8.20817 8.20817 4.55954 8.483 0H8.51629C8.79112 4.55954 12.4405 8.20817 17 8.48371V8.517Z"
+                fill="white"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_747_1829">
+                <rect width="17" height="17" fill="white" />
+              </clipPath>
+            </defs>
           </svg>
         </button>
       )}
@@ -91,9 +99,10 @@ export function GeminiAnalyzeButton({
       {state === "done" && (
         <div className="relative">
           <button
+            onClick={handleReopenTooltip}
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md transition-all hover:scale-110"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md transition-all hover:scale-110 hover:bg-opacity-90"
           >
             <svg
               className="h-4 w-4"
@@ -114,27 +123,20 @@ export function GeminiAnalyzeButton({
           {showTooltip && (
             <div
               ref={tooltipRef}
-              className="absolute right-0 top-10 z-50 w-72 rounded-lg border border-gray-200 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+              className="animate-in fade-in zoom-in-95 absolute right-0 top-10 z-50 w-80 rounded-xl border border-purple-100 bg-white p-5 shadow-2xl dark:border-gray-700 dark:bg-gray-800"
             >
-              <div className="mb-2 flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500">
-                  <svg
-                    className="h-3 w-3 text-white"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-                  </svg>
-                </div>
-                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+              <div className="mb-3 flex items-center gap-2 border-b border-gray-100 pb-2 dark:border-gray-700">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-sm font-bold text-transparent dark:from-blue-400 dark:to-purple-400">
                   Yapay Zeka Yorumu
                 </span>
               </div>
-              <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+
+              <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
                 {response}
               </p>
-              <div className="mt-2 text-right">
-                <span className="text-xs text-gray-400">
+
+              <div className="mt-3 flex justify-end">
+                <span className="text-[10px] text-gray-400">
                   AI tarafından oluşturuldu
                 </span>
               </div>
