@@ -33,7 +33,7 @@ export function Participants(props: SVGPropsType) {
 export function Departments(props: SVGPropsType) {
   return (
     <svg width={58} height={58} viewBox="0 0 58 58" fill="none" {...props}>
-      <circle cx={29} cy={29} r={29} fill="#8155FF" />
+      <circle cx={29} cy={29} r={29} fill="#5f89ffff" />
       <path
         d="M20 24.5C20 22.014 20 20.772 20.732 19.886C21.464 19 22.634 19 25 19H26.757C27.942 19 28.535 19 29.057 19.224C29.579 19.448 29.978 19.872 30.778 20.721L31.222 21.188C32.022 22.037 32.422 22.462 32.943 22.686C33.465 22.91 34.058 22.91 35.243 22.91H37C39.366 22.91 40.536 22.91 41.268 23.796C42 24.682 42 25.924 42 28.41V33.5C42 35.986 42 37.228 41.268 38.114C40.536 39 39.366 39 37 39H25C22.634 39 21.464 39 20.732 38.114C20 37.228 20 35.986 20 33.5V24.5Z"
         fill="#fff"
@@ -61,7 +61,7 @@ export function Age(props: SVGPropsType) {
 export function GPA(props: SVGPropsType) {
   return (
     <svg width={58} height={58} viewBox="0 0 58 58" fill="none" {...props}>
-      <circle cx={29} cy={29} r={29} fill="#18BFFF" />
+      <circle cx={29} cy={29} r={29} fill="#ff5c57ff" />
       <path
         d="M29 18L31.472 25.528H39.36L32.944 30.194L35.416 37.722L29 33.056L22.584 37.722L25.056 30.194L18.64 25.528H26.528L29 18Z"
         fill="#fff"

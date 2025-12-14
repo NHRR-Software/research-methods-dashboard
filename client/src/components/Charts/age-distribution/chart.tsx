@@ -26,7 +26,7 @@ export function AgeDistributionChart({ data }: PropsType) {
     legend: {
       show: false,
     },
-    colors: ["#8155FF"],
+    colors: ["#ff8833ff"],
     chart: {
       height: 310,
       type: "area",
@@ -78,14 +78,14 @@ export function AgeDistributionChart({ data }: PropsType) {
       },
       style: {
         fontSize: "12px",
-        colors: ["#8155FF"],
+        colors: ["#ff8833ff"],
       },
       background: {
         enabled: true,
         foreColor: "#fff",
         borderRadius: 4,
         padding: 4,
-        borderColor: "#8155FF",
+        borderColor: "#ff8833ff",
       },
     },
     tooltip: {

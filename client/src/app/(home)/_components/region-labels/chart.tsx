@@ -48,7 +48,7 @@ export function AIToolsUsageChart({ data }: PropsType) {
   const dynamicMax = maxValue + maxValue * 0.2 + 5;
 
   const options: ApexOptions = {
-    colors: ["#8B5CF6"], // Violet rengi
+    colors: ["#5c9cf6ff"], // Violet rengi
     chart: {
       type: "bar",
       toolbar: {

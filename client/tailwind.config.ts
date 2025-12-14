@@ -69,11 +69,11 @@ const config: Config = {
           },
         },
         blue: {
-          DEFAULT: "#3C50E0",
-          dark: "#1C3FB7",
+          DEFAULT: "#ff6739ff",
+          dark: "#ff7e34ff",
           light: {
-            DEFAULT: "#5475E5",
-            2: "#8099EC",
+            DEFAULT: "#e57854ff",
+            2: "#ff9567ff",
             3: "#ADBCF2",
             4: "#C3CEF6",
             5: "#E1E8FF",

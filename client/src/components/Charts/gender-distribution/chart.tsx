@@ -60,7 +60,7 @@ export function GenderDistributionChart({ data: inputData }: PropsType) {
     datasets: [
       {
         data: [maleCount, femaleCount],
-        backgroundColor: ["#5750F1", "#0ABEF9"],
+        backgroundColor: ["#ff8833ff", "#0ABEF9"],
         borderWidth: 0,
       },
     ],

@@ -47,7 +47,7 @@ export function UsagePurposesChart({ data }: PropsType) {
   const dynamicMax = maxValue + maxValue * 0.25;
 
   const options: ApexOptions = {
-    colors: ["#3C50E0"],
+    colors: ["#ff8e2bff"],
     chart: {
       type: "bar",
       toolbar: {

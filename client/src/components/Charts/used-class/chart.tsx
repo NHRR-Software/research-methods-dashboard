@@ -75,8 +75,8 @@ export function ClassDistributionChart({ data: inputData }: PropsType) {
           "#3C50E0", // Hazırlık
           "#FF6B6B", // 1
           "#FFB347", // 2
-          "#4ECB71", // 3
-          "#A855F7", // 4
+          "#4e7ccbff", // 3
+          "#34bfffff", // 4
         ],
         borderWidth: 0,
       },

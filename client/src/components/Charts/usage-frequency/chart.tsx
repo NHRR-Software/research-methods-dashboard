@@ -44,8 +44,8 @@ export function UsageFrequencyChart({ data: inputData }: PropsType) {
           "#EF4444", // Kırmızı
           "#F97316", // Turuncu
           "#22C55E", // Yeşil
-          "#A855F7", // Mor
-          "#6366F1", // İndigo (Ekstra renk ihtimaline karşı)
+          "#3f99ffff", // Mor
+          "#63c2f1ff", // İndigo (Ekstra renk ihtimaline karşı)
         ],
         borderWidth: 0,
       },
