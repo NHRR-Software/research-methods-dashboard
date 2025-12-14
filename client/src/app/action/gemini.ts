@@ -36,7 +36,7 @@ export async function analyzeChartData(chartName: string, chartData: string) {
             "content": `Analiz Konusu: ${chartName}\nVeriler: ${chartData}`
           }
         ],
-        "temperature": 0.5, // Daha tutarlı ve ciddi olması için sıcaklığı düşürdük
+        "temperature": 0.5,
       })
     });
 
